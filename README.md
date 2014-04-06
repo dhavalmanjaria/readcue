@@ -7,3 +7,6 @@ This started out as a simple project to extract the timings for each song in a l
 
 Usage: readcue --alac [y|n] <cuefile>
 
+Note: I use ALAC because that's the only way I can get lossless audio
+on my iPod.
+
