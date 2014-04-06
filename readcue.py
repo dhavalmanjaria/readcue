@@ -222,44 +222,9 @@ for x in metadata_list:
 
 # Now we make the ffmpeg command
 
-# For the purposes of this file, we set the artist variable and album for
-# every song ourself 
 
-# for x in metadata_list:
-# 	title = x["title"]
-# 	performer = x["performer"]
-# 	trackno = x["index"]
-# 	start = x["offset"][0]
-# 	end = x["offset"][1]
-# 
-# 	command = "ffmpeg -ss " + str(x["start_offset"]) + ""+\
-# 	" -i "+album+" -ac 2 -ar 44100 -b:a 320k -acodec alac "
-# 	
-# 	command += " -metadata title=\""+ title +\
-# 	"\" -metadata track=\""+trackno+"\" -metadata album=\""+album+\
-# 	"\" -metadata author="+performer+""  
-# 
-# 	# If we're at the last song, exclude this option
-# 	if (end != ''):
-# 		command += " -t " + str(x["duration"])
-# 
-# 	command += " \"" + title + ".m4a\""
-# 
-# 
-# 	print command
-# 	print '\n'
-# 
-# 	# And now, for the final act!
-# 	subprocess.call(command.split())
-# 
-# 	# Note: We don't use subprocess because the quotes in the command
-# 	# cause problems and the command string becomes somewhat
-# 	# ridiculous in the metadata section. So we use this.
-# 
-# 	#os.system(command)
-
-# We're going to try to create a command that subprocess can use. Why?
-# I don't know.
+# This will generate a list that subprocess will call to execute
+# ffmpeg
 
 for x in metadata_list:
 	command = []
