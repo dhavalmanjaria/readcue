@@ -46,7 +46,20 @@ if (len(os.sys.argv) < 4):
 	print "Usage: readcue --alac [y|n] <cuefile>"
 	os.sys.exit(1)
 
-f = open(os.sys.argv[3], "r")
+try:
+	with open(os.sys.argv[3], "r") as f:
+		# We count the number of lines. This makes things a lot simpler
+		line_count = 0
+		for l in f:
+			line_count += 1
+		print line_count
+except IOError as e:
+	print "An IOError occured."
+	print "{0}: {1}".format(e.errno, e.strerror)
+	print "Exiting..."
+	os.sys.exit(1)
+
+
 # album_file = os.sys.argv[2]
 
 # Initialize to yes because that was what it was originally intended
@@ -55,15 +68,8 @@ alac_option = 'y'
 if (os.sys.argv[2] == 'n'):
 	alac_option = 'n'
 
-# We count the number of lines. This makes things a lot simpler
-line_count = 0
-while (line != ''):
-	line = f.readline()
-	line_count += 1
 
-f.close()
 
-f = open(os.sys.argv[3], "r")
 	
 i = 0 # loop count, starting at line 8
 title = ''
@@ -72,79 +78,91 @@ field_count = 0
 ################
 # Begin loop
 ################
-while (i < line_count - 1):
-	# loop till we get to the data and extract the album data
-	line = f.readline()
-	row = line.split()
+try:
+	with open(os.sys.argv[3],"r") as f:
+		for line in f:
+			row = line.split()
 
-	while (i < 6):	
-		line = f.readline()
-		row = line.split()
-		if (row[0] == "TITLE"):
-			album_title = ' '.join(row[1:])
-			album_title = album_title.replace("\"","")
-		if (row[0] == "FILE"):
-			album_file = ' '.join(row[1:-1])
-			album_file = album_file.replace("\"","")
-		i += 1
+			# Get album title and the file name forn the FLAC file we
+			# will read
+			if i < 6:
+				row = line.split()
+				if (row[0] == "TITLE"):
+					album_title = ' '.join(row[1:])
+					album_title = album_title.replace("\"","")
+				if (row[0] == "FILE"):
+					album_file = ' '.join(row[1:-1])
+					album_file = album_file.replace("\"","")
+				i += 1
+				continue
+				
+			print str(i) + ": " + line
 
+			# The issue here is that the file is not uniform. What we have is
+			# the first word of each line which is the property.
+			
+			# This line will be common between all
 
-	# The issue here is that the file is not uniform. What we have is
-	# the first word of each line which is the property.
-	
-	# This line will be common between all
+			# TRACK gives us track no.
+			# INDEX gives us the offset
+			# TITLE gives us the title
+			# PERFORMER gives us the artiste
+			# field_count will give us the count of how many fields we have.
+			# Once we have enough, we append to the metadata_list
 
-	# TRACK gives us track no.
-	# INDEX gives us the offset
-	# TITLE gives us the title
-	# PERFORMER gives us the artiste
-	# field_count will give us the count of how many fields we have.
-	# Once we have enough, we append to the metadata_list
+			line = line.strip() # remove leading and trailing whitespaces
+			row = line.split()
 
-	line = line.strip() # remove leading and trailing whitespaces
-	row = line.split()
+			if (i > 24 and i < 28):
+				print str(i) +  line
 
-	if (i > 24 and i < 28):
-		print str(i) +  line
+			if (row[0] == "TRACK"):	
+				metadata_dict["index"] = row[1]
+				field_count += 1
+			
+			if (row[0] == "TITLE"):
+				title = " ".join(row[1:])
+				title = title.replace("\"","")
+				metadata_dict["title"] = title
+				field_count += 1
 
-	if (row[0] == "TRACK"):	
-		metadata_dict["index"] = row[1]
-		field_count += 1
-	
-	if (row[0] == "TITLE"):
-		title = " ".join(row[1:])
-		title = title.replace("\"","")
-		metadata_dict["title"] = title
-		field_count += 1
+			if (row[0] == "INDEX" and row[1] == "01"):
+				if (i == 10):
+					print 'Reading index of Overture'
+					print row[2]
+				metadata_dict["offset"].append(row[2])
+				field_count += 1
 
-	if (row[0] == "INDEX" and row[1] == "01"):
-		if (i == 10):
-			print 'Reading index of Overture'
-			print row[2]
-		metadata_dict["offset"].append(row[2])
-		field_count += 1
+			if (row[0] == "PERFORMER"):
+				metadata_dict["performer"] = ' '.join(row[1:])
+				field_count += 1
 
-	if (row[0] == "PERFORMER"):
-		metadata_dict["performer"] = ' '.join(row[1:])
-		field_count += 1
+			if (field_count == 4):
+				# push to stack
+				metadata_list.append(metadata_dict)
+				# Reinitialize metadata_dict
+				metadata_dict = {"title":'',"index":0,"offset":[], "duration":'',\
+				"start_offset":'', "performer":''} 
+				field_count = 0
+			
+			i += 1
 
-	if (field_count == 4):
-		# push to stack
-		metadata_list.append(metadata_dict)
-		# Reinitialize metadata_dict
-		metadata_dict = {"title":'',"index":0,"offset":[], "duration":'',\
-		"start_offset":'', "performer":''} 
-		field_count = 0
-	
-	i += 1
+except IOError as e:
+	print "An exception has occured"
+	print "{0}: {1}".format(e.errno, e.strerror)
+	os.sys.exit(1)
 
+except IndexError as e:
+	print "IndexError occured"
+	os.sys.exit(1)
 
+except Exception as e:
+	print "Unknown exception occured"
+	os.sys.exit(1)
 ####################
 # End loop
 ####################
 
-#### IMPORTANT: CLOSING THE FILE
-f.close()
 
 # Now for the extraction and conversion
 # First we fix the offsets.
@@ -274,7 +292,8 @@ for x in metadata_list:
 	print command
 	#print '\n\n'
 	subprocess.call(command)
-	
-os.sys.exit(1)
+
+# If we reach here, the program has probably exited normally.
+os.sys.exit(0)
 
 
