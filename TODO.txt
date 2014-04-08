@@ -1,0 +1,7 @@
+Add try catch on file open, or use with.
+
+Don't use while loops to count lines.
+
+Read the whole file into memory.
+
+Ensure file format is cue
