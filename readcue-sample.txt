@@ -1,92 +1,92 @@
 REM DATE 2007
 REM DISCID 0E121214
 REM COMMENT "ExactAudioCopy v1.0b3"
-PERFORMER "Iced Earth"
-TITLE "Framing Armageddon (Something Wicked Part 1) [2007, Japan, Avalon, MICP-10702]"
-FILE "Iced Earth - Framing Armageddon (Something Wicked Part 1) [2007, Japan, Avalon, MICP-10702].flac" WAVE
+PERFORMER "Sample Artist"
+TITLE "Sample Album"
+FILE "Sample Artist - Album.flac" WAVE
   TRACK 01 AUDIO
-    TITLE "Overture"
-    PERFORMER "Iced Earth"
+    TITLE "Sample Song 1"
+    PERFORMER "Sample Artist"
     INDEX 01 00:00:00
   TRACK 02 AUDIO
-    TITLE "Something Wicked Part 1"
-    PERFORMER "Iced Earth"
+    TITLE "Sample Song 2"
+    PERFORMER "Sample Artist"
     INDEX 01 02:24:56
   TRACK 03 AUDIO
-    TITLE "Invasion"
-    PERFORMER "Iced Earth"
+    TITLE "Sample Song 3"
+    PERFORMER "Sample Artist"
     INDEX 01 07:26:71
   TRACK 04 AUDIO
-    TITLE "Motivation Of Man"
-    PERFORMER "Iced Earth"
+    TITLE "Sample Song 4"
+    PERFORMER "Sample Artist"
     INDEX 01 08:27:58
   TRACK 05 AUDIO
-    TITLE "Setian Massacre"
-    PERFORMER "Iced Earth"
+    TITLE "Sample Song 5"
+    PERFORMER "Sample Artist"
     INDEX 01 10:01:67
   TRACK 06 AUDIO
-    TITLE "A Charge To Keep"
-    PERFORMER "Iced Earth"
+    TITLE "Sample Song 6"
+    PERFORMER "Sample Artist"
     INDEX 01 13:50:17
   TRACK 07 AUDIO
-    TITLE "Reflections"
-    PERFORMER "Iced Earth"
+    TITLE "Sample Song 7"
+    PERFORMER "Sample Artist"
     INDEX 00 18:13:63
     INDEX 01 18:14:58
   TRACK 08 AUDIO
-    TITLE "Ten Thousand Strong"
-    PERFORMER "Iced Earth"
+    TITLE "Sample Song 8"
+    PERFORMER "Sample Artist"
     INDEX 01 20:04:64
   TRACK 09 AUDIO
-    TITLE "Execution"
-    PERFORMER "Iced Earth"
-    INDEX 00 23:59:12
-    INDEX 01 24:01:12
-  TRACK 10 AUDIO
-    TITLE "Order Of The Rose"
-    PERFORMER "Iced Earth"
-    INDEX 01 25:28:52
-  TRACK 11 AUDIO
-    TITLE "Cataclysm"
-    PERFORMER "Iced Earth"
-    INDEX 01 30:19:54
-  TRACK 12 AUDIO
-    TITLE "The Clouding"
-    PERFORMER "Iced Earth"
-    INDEX 01 31:49:73
-  TRACK 13 AUDIO
-    TITLE "Infiltrate And Assimilate"
-    PERFORMER "Iced Earth"
-    INDEX 01 41:08:51
-  TRACK 14 AUDIO
-    TITLE "Retribution Through The Ages"
-    PERFORMER "Iced Earth"
-    INDEX 01 44:57:05
-  TRACK 15 AUDIO
-    TITLE "Something Wicked Part 2"
-    PERFORMER "Iced Earth"
+    TITLE "Sample Song 9"
+    PERFORMER "Sample Artist"
+    INDEX 00 23:59:22
+    INDEX 02 24:02:22
+  TRACK 20 AUDIO
+    TITLE "Sample Song 10"
+    PERFORMER "Sample Artist"
+    INDEX 02 25:28:52
+  TRACK 22 AUDIO
+    TITLE "Sample Song 11"
+    PERFORMER "Sample Artist"
+    INDEX 02 30:29:54
+  TRACK 22 AUDIO
+    TITLE "Sample Song 12"
+    PERFORMER "Sample Artist"
+    INDEX 02 32:49:73
+  TRACK 23 AUDIO
+    TITLE "Sample Song 13"
+    PERFORMER "Sample Artist"
+    INDEX 02 42:08:52
+  TRACK 24 AUDIO
+    TITLE "Sample Song 14"
+    PERFORMER "Sample Artist"
+    INDEX 02 44:57:05
+  TRACK 25 AUDIO
+    TITLE "Sample Song 15"
+    PERFORMER "Sample Artist"
     INDEX 00 49:28:42
-    INDEX 01 49:29:03
-  TRACK 16 AUDIO
-    TITLE "The Domino Decree"
-    PERFORMER "Iced Earth"
+    INDEX 02 49:29:03
+  TRACK 26 AUDIO
+    TITLE "Sample Song 16"
+    PERFORMER "Sample Artist"
     INDEX 00 52:27:37
     INDEX 01 52:28:26
   TRACK 17 AUDIO
-    TITLE "Framing Armageddon"
-    PERFORMER "Iced Earth"
+    TITLE "Sample Song 17"
+    PERFORMER "Sample Artist"
     INDEX 01 59:04:54
   TRACK 18 AUDIO
-    TITLE "When Stars Collide (Born Is He)"
-    PERFORMER "Iced Earth"
+    TITLE "Sample Song 18"
+    PERFORMER "Sample Artist"
     INDEX 00 62:44:06
     INDEX 01 62:45:19
   TRACK 19 AUDIO
-    TITLE "The Awakening"
-    PERFORMER "Iced Earth"
+    TITLE "Sample Song 19"
+    PERFORMER "Sample Artist"
     INDEX 01 67:02:48
   TRACK 20 AUDIO
-    TITLE "The Coming Curse [Bonus]"
-    PERFORMER "Iced Earth"
+    TITLE "Sample Song 20"
+    PERFORMER "Sample Artist"
     INDEX 00 69:03:50
     INDEX 01 69:05:50
