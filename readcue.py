@@ -25,6 +25,88 @@
 
 import argparse
 
+def ReadTrack(filepath):
+        """
+        Lazy function (generator) to read a list of tracks
+        from a given file which contains each track information
+        Reads one Track at the time
+        """
+        ## some tracks don't have 00 and 01 index.
+        ## keep track of the previous index to use as start
+        previous = None
+        ## keep track if we are in a track collecting metadata ?
+        inTrack =  False
+        ## which part of the collection are we ?
+        stage = None
+        ## track metadata
+        album = ""
+        title = ""
+        performer = ""
+        track_no = 0
+        s_index = 0
+        e_index = 0
+
+#        with open(filepath, 'r') as f:
+        if filepath != None:
+                f = filepath
+                for line in f:
+                        ## check if we are currently collecting
+                        if inTrack == False:
+                                if stage == None:
+                                        ## first read ,get album
+                                        album = line.strip()
+                                        ## set stage for tracking where we are
+                                        stage = 0
+                                ## we are not collecting
+                                ## see if we need to be
+                                if 'TRACK' in line:
+                                        inTrack = True
+                                        ## get track number
+                                        track_no = line.split()[1]
+                                        continue
+
+                        ## we are currently collecting
+                        if 'TITLE' in line:
+                                s = line.find('"')+1
+                                e = line.rfind('"')
+                                title = line[s:e]
+                                stage = stage + 1
+                                continue
+                        if 'PERFORMER' in line:
+                                s = line.find('"')+1
+                                e = line.rfind('"')
+                                performer = line[s:e]
+                                stage = stage + 1
+                                continue
+                        if 'INDEX' in line:
+                                if '01 ' in line:
+                                        ## we don't have 2 indexes
+                                        t = line.find('01 ')+3
+                                        e_index = line[t:].strip()
+                                        stage = 0
+                                        inTrack = False
+                                        if previous == None:
+                                                s_index = '00:00:00'
+                                                previous = e_index
+                                        else:
+                                                s_index = previous
+                                                previous = e_index
+                                        yield album,track_no,title,performer,s_index,e_index
+                                ## we have two indexes
+                                elif '00 ' in line and 3 == stage + 1:
+                                        ## we have 2 indexes
+                                        t = line.find('00 ')+3
+                                        s_index = line[t:].strip()
+                                        stage = stage + 1
+                                        ## read second index
+                                        line = f.readline()
+                                        if '01 ' in line and 4 == stage + 1:
+                                                t = line.find('01 ')+3
+                                                e_index = line[t:].strip()
+                                                stage = 0
+                                                inTrack = False
+                                                yield album,track_no,title,performer,s_index,e_index
+
 def create_argparser():
         """
         This function creates and configures
@@ -66,6 +148,26 @@ if __name__ == '__main__':
         # parse the arguments
         args = parser.parse_args()
 
-        cue_file = 'readcue.txt'
+        cue_fpath = 'readcue.txt'
         if args.file != None:
-                cue_file = args.file
+                cue_fpath = args.file
+
+        ## open the file for ReadTrack
+        try:
+                cue_file = open(cue_fpath, 'r')
+        except FileNotFoundError as ferr:
+                print("could not find '{}'\n"
+                      "please use -f filename ."
+                      "check -h or --help for usage".
+                      format(cue_fpath))
+                exit(1)
+
+        for _album,_track_no,_title,_performer,_idx,__idx in ReadTrack(cue_file):
+                print("Album   : \"{}\"\n"
+                      "Track   : \"{}\"\n"
+                      "Title   : \"{}\"\n"
+                      "Artist  : \"{}\"\n"
+                      "Duration: [\"{}\" , \"{}\"]\n"
+                      .format(_album,_track_no,_title,_performer,_idx,__idx))
+
+
