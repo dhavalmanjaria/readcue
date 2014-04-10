@@ -46,13 +46,17 @@ if (len(os.sys.argv) < 4):
 	print "Usage: readcue --alac [y|n] <cuefile>"
 	os.sys.exit(1)
 
+start_of_track_data = 0
+""" This variable is a flag checks where the track data starts in the file. It
+seperates the album metadata which is available in the first few lines
+and the track data, which is available after it."""
+
 try:
 	with open(os.sys.argv[3], "r") as f:
 		# We count the number of lines. This makes things a lot simpler
 		line_count = 0
 		for l in f:
 			line_count += 1
-		print line_count
 except IOError as e:
 	print "An IOError occured."
 	print "{0}: {1}".format(e.errno, e.strerror)
@@ -68,9 +72,6 @@ alac_option = 'y'
 if (os.sys.argv[2] == 'n'):
 	alac_option = 'n'
 
-
-
-	
 i = 0 # loop count, starting at line 8
 title = ''
 field_count = 0
@@ -85,7 +86,7 @@ try:
 
 			# Get album title and the file name forn the FLAC file we
 			# will read
-			if i < 6:
+			if start_of_track_data < 1:
 				row = line.split()
 				if (row[0] == "TITLE"):
 					album_title = ' '.join(row[1:])
@@ -93,10 +94,10 @@ try:
 				if (row[0] == "FILE"):
 					album_file = ' '.join(row[1:-1])
 					album_file = album_file.replace("\"","")
+					start_of_track_data += 1
+
 				i += 1
 				continue
-				
-			print str(i) + ": " + line
 
 			# The issue here is that the file is not uniform. What we have is
 			# the first word of each line which is the property.
@@ -113,29 +114,24 @@ try:
 			line = line.strip() # remove leading and trailing whitespaces
 			row = line.split()
 
-			if (i > 24 and i < 28):
-				print str(i) +  line
-
 			if (row[0] == "TRACK"):	
 				metadata_dict["index"] = row[1]
 				field_count += 1
 			
-			if (row[0] == "TITLE"):
+			elif (row[0] == "TITLE" and i > start_of_track_data):
 				title = " ".join(row[1:])
 				title = title.replace("\"","")
 				metadata_dict["title"] = title
 				field_count += 1
 
-			if (row[0] == "INDEX" and row[1] == "01"):
-				if (i == 10):
-					print 'Reading index of Overture'
-					print row[2]
+			elif (row[0] == "INDEX" and row[1] == "01"):
 				metadata_dict["offset"].append(row[2])
 				field_count += 1
 
-			if (row[0] == "PERFORMER"):
+			elif (row[0] == "PERFORMER"):
 				metadata_dict["performer"] = ' '.join(row[1:])
 				field_count += 1
+
 
 			if (field_count == 4):
 				# push to stack
@@ -157,7 +153,8 @@ except IndexError as e:
 	os.sys.exit(1)
 
 except Exception as e:
-	print "Unknown exception occured"
+	print "Fatal error occured: "
+	print str(e)
 	os.sys.exit(1)
 ####################
 # End loop
