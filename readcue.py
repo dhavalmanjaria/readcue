@@ -69,7 +69,13 @@ def ReadTrack(filepath):
                                         stage = 0
                                         inTrack = True
                                         ## get track number
-                                        track_no = line.split()[1]
+                                        #track_no = line.split()[1]
+                                        # We can get by with using find and rfind since for a filed that 
+                                        # contains 'TRACK' the track number will always be between 2 
+                                        # spaces
+                                        s = line.find('K')+2
+                                        e = line.rfind(' ')
+                                        track_no = line[s:e]
                                         continue
 
                         ## we are currently collecting
