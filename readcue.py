@@ -92,11 +92,10 @@ def ReadTrack(filepath):
                                 stage = stage + 1
                                 continue
                                 # The file has two 'PERFORMER' fields.
-                                # The first one is global for the entire album and the second one is 
-                                # for the individual tracks.
                                 # If they are different, which could be the case if you have 
                                 # a compilation album or if a track has more than one artist associated
-                                # with it, then we need to accomodate for that.
+                                # with it, then we need to accomodate for that. But ffmpeg doesn't 
+                                # support that.
                         if 'INDEX' in line:
                                 if '01 ' in line:
                                         ## we don't have 2 indexes
