@@ -53,13 +53,20 @@ def ReadTrack(filepath):
                         ## check if we are currently collecting
                         if inTrack == False:
                                 if stage == None:
-                                        ## first read ,get album
-                                        album = line.strip()
-                                        ## set stage for tracking where we are
-                                        stage = 0
+                                         ## first read ,get album
+                                         print(stage)
+                                         if 'TITLE' in line:
+                                                s = line.find('"')+1
+                                                e = line.rfind('"')
+                                                album = line[s:e]
+                                                continue
+                                         # Q: If stage specifies which stage of track metadata we're in
+                                         # Why are we setting the stage when we find the album
+                                         # and not when we see 'TRACK'
                                 ## we are not collecting
                                 ## see if we need to be
                                 if 'TRACK' in line:
+                                        stage = 0
                                         inTrack = True
                                         ## get track number
                                         track_no = line.split()[1]
@@ -72,12 +79,18 @@ def ReadTrack(filepath):
                                 title = line[s:e]
                                 stage = stage + 1
                                 continue
-                        if 'PERFORMER' in line:
+                        if 'PERFORMER' in line and stage != None:
                                 s = line.find('"')+1
                                 e = line.rfind('"')
                                 performer = line[s:e]
                                 stage = stage + 1
                                 continue
+                                # The file has two 'PERFORMER' fields.
+                                # The first one is global for the entire album and the second one is 
+                                # for the individual tracks.
+                                # If they are different, which could be the case if you have 
+                                # a compilation album or if a track has more than one artist associated
+                                # with it, then we need to accomodate for that.
                         if 'INDEX' in line:
                                 if '01 ' in line:
                                         ## we don't have 2 indexes
