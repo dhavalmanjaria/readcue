@@ -54,7 +54,6 @@ def ReadTrack(filepath):
                         if inTrack == False:
                                 if stage == None:
                                          ## first read ,get album
-                                         print(stage)
                                          if 'TITLE' in line:
                                                 s = line.find('"')+1
                                                 e = line.rfind('"')
@@ -101,7 +100,6 @@ def ReadTrack(filepath):
                                         ## we don't have 2 indexes
                                         t = line.find('01 ')+3
                                         e_index = line[t:].strip()
-                                        stage = 0
                                         inTrack = False
                                         if previous == None:
                                                 s_index = '00:00:00'
