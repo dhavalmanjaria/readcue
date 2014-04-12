@@ -46,10 +46,21 @@ def ReadTrack(filepath):
         s_index = 0
         e_index = 0
 
+
+        p_album = ""
+        p_title = ""
+        p_performer = ""
+        p_track_no = 0
+        p_s_index = 0
+        p_e_index = 0
+
+        loopCount = 0
+
 #        with open(filepath, 'r') as f:
         if filepath != None:
                 f = filepath
                 for line in f:
+                        loopCount += 1
                         ## check if we are currently collecting
                         if inTrack == False:
                                 if stage == None:
@@ -64,7 +75,16 @@ def ReadTrack(filepath):
                                          # and not when we see 'TRACK'
                                 ## we are not collecting
                                 ## see if we need to be
+                                p_track_no = track_no
+                                p_album = album
+                                p_title = title
+                                p_performer = performer
+                                p_s_index = p_e_index
+                                print('IN TRACK: track_no={}'.format(track_no))
+                                p_e_index = s_index
                                 if 'TRACK' in line:
+#                                        if 0 != track_no:
+
                                         stage = 0
                                         inTrack = True
                                         ## get track number
@@ -75,6 +95,7 @@ def ReadTrack(filepath):
                                         s = line.find('K')+2
                                         e = line.rfind(' ')
                                         track_no = line[s:e]
+                               
                                         continue
 
                         ## we are currently collecting
@@ -107,22 +128,36 @@ def ReadTrack(filepath):
                                         else:
                                                 s_index = previous
                                                 previous = e_index
-                                        yield album,track_no,title,performer,s_index,e_index
+                                        
+                                        p_e_index = e_index # Regardless
+                                        
+                                        if 0 != p_track_no: # Meaning p_vars are set
+                                                yield p_album,p_track_no,p_title,p_performer,p_s_index,p_e_index
+                                        
+                                        
+                                        
+                                        if '01' in track_no:
+                                                p_s_index = '00:00:00'
+                                                continue
+                                        else:
+                                                p_s_index = p_e_index
+                                                continue
+                                        
                                 ## we have two indexes
-                                elif '00 ' in line and 3 == stage + 1:
-                                        ## we have 2 indexes
-                                        t = line.find('00 ')+3
-                                        s_index = line[t:].strip()
-                                        stage = stage + 1
-                                        ## read second index
-                                        line = f.readline()
-                                        if '01 ' in line and 4 == stage + 1:
-                                                t = line.find('01 ')+3
-                                                e_index = line[t:].strip()
-                                                stage = 0
-                                                inTrack = False
-                                                yield album,track_no,title,performer,s_index,e_index
-
+#                                elif '00 ' in line and 3 == stage + 1:
+#                                        ## we have 2 indexes
+#                                        t = line.find('00 ')+3
+#                                        s_index = line[t:].strip()
+#                                        stage = stage + 1
+#                                        ## read second index
+#                                        line = f.readline()
+#                                        if '01 ' in line and 4 == stage + 1:
+#                                                t = line.find('01 ')+3
+#                                                e_index = line[t:].strip()
+#                                                stage = 0
+#                                                inTrack = False
+#                                                yield album,track_no,title,performer,s_index,e_index
+#
 def create_argparser():
         """
         This function creates and configures
