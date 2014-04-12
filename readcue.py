@@ -75,6 +75,10 @@ def ReadTrack(filepath):
                                          # and not when we see 'TRACK'
                                 ## we are not collecting
                                 ## see if we need to be
+
+                                ## Copies the current variables into previous variables regardless of whether or not its
+                                ## there. Once it reads the next set of variables, it yeilds them in the INDEX section
+
                                 p_track_no = track_no
                                 p_album = album
                                 p_title = title
@@ -131,10 +135,14 @@ def ReadTrack(filepath):
                                         
                                         p_e_index = e_index # Regardless
                                         
+                                       
+                                        ## 
+                                        ## This yields the previous vars but since it only yeilds if p_track_no is not
+                                        ## 0, it does it after the first track is fixed. This method works, however the
+                                        ## last track is not yeilded. This code requires a bunch of cleanup.
+
                                         if 0 != p_track_no: # Meaning p_vars are set
                                                 yield p_album,p_track_no,p_title,p_performer,p_s_index,p_e_index
-                                        
-                                        
                                         
                                         if '01' in track_no:
                                                 p_s_index = '00:00:00'
