@@ -84,7 +84,6 @@ def ReadTrack(filepath):
                                 p_title = title
                                 p_performer = performer
                                 p_s_index = p_e_index
-                                print('IN TRACK: track_no={}'.format(track_no))
                                 p_e_index = s_index
                                 if 'TRACK' in line:
 #                                        if 0 != track_no:
@@ -99,7 +98,7 @@ def ReadTrack(filepath):
                                         s = line.find('K')+2
                                         e = line.rfind(' ')
                                         track_no = line[s:e]
-                               
+
                                         continue
 
                         ## we are currently collecting
@@ -126,12 +125,12 @@ def ReadTrack(filepath):
                                         t = line.find('01 ')+3
                                         e_index = line[t:].strip()
                                         inTrack = False
-                                        if previous == None:
-                                                s_index = '00:00:00'
-                                                previous = e_index
-                                        else:
-                                                s_index = previous
-                                                previous = e_index
+#                                        if previous == None:
+#                                                s_index = '00:00:00'
+#                                                previous = e_index
+#                                        else:
+#                                                s_index = previous
+#                                                previous = e_index
                                         
                                         p_e_index = e_index # Regardless
                                         
@@ -165,7 +164,12 @@ def ReadTrack(filepath):
 #                                                stage = 0
 #                                                inTrack = False
 #                                                yield album,track_no,title,performer,s_index,e_index
-#
+
+
+                # If we still have data left in the current track variables
+                if '' != album and '' != p_album:
+                        yield album,track_no,title,performer,e_index,None
+
 def create_argparser():
         """
         This function creates and configures
