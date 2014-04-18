@@ -23,7 +23,8 @@
 ## flac file and from that separates it into it's individual songs
 #############################################################################
 
-import argparse
+import argparse, subprocess
+
 
 def ReadTrack(filepath):
         """
@@ -70,6 +71,13 @@ def ReadTrack(filepath):
                                                 e = line.rfind('"')
                                                 album = line[s:e]
                                                 continue
+
+                                         if 'FILE' in line:
+                                                s = line.find('"')+1
+                                                e = line.rfind('"')
+                                                global filename
+                                                filename = line[s:e]
+                                                
                                          # Q: If stage specifies which stage of track metadata we're in
                                          # Why are we setting the stage when we find the album
                                          # and not when we see 'TRACK'
@@ -168,7 +176,7 @@ def ReadTrack(filepath):
 
                 # If we still have data left in the current track variables
                 if '' != album and '' != p_album:
-                        yield album,track_no,title,performer,e_index,None
+                        yield album,track_no,title,performer,e_index,' '
 
 def create_argparser():
         """
@@ -202,7 +210,13 @@ def create_argparser():
 
         parser.add_argument('-c', '--codec',
                             choices=['alac','flac'],
+                            default='alac',
                             help='enables conversion to alac or flac file format')
+
+        parser.add_argument('--loglevel',
+                            choices=['quiet','panic','fatal','error','warning','info','verbose','debug'],
+                            default='info',
+                            help='pass minimal loglevel values to ffmpeg')
 
         return parser
 
@@ -211,8 +225,18 @@ def buildCommand(args):
         
         # COMMAND INDEXES
         # 2 = start time
-        # 3 = album time
-        #
+        # 3 = file name
+        # 12 = codec
+        # 14 = track no
+        # 16 = album
+        # 18 = artist
+        # 20 = title
+        # If we're not on the last song
+        # 22 = duration                
+        # 23 = filename
+        # if we're on the last song
+        # 21 = filename
+        
 
         command = []
         command.append('ffmpeg')
@@ -220,39 +244,121 @@ def buildCommand(args):
         command.append('-ss')
         command.append('start_time')
         command.append('-i')
-        command.append('album_name')
+        command.append('file_name')
 
         ### END INPUT SECTION        
         
         ### SOUND SECTION
+
+        # CHANNELS
         command.append("-ac")
         command.append("2")
+
+        # FREQUENCY
         command.append("-ar")
         command.append("44100")
-        command.append("-b:c")
+
+        # BITRATE
+        command.append("-b:a")
         command.append("320k")
+
+        # CODEC
         command.append('-acodec')
         command.append(args.codec)
 
+        # END SOUND SECTION  
+
+        # METADATA SECTION (To be modified by generator below)
         
+        # Track No.
+        command.append("-metadata")
+        command.append("track_no")
 
+        # Album name
+        command.append("-metadata")
+        command.append("album_name")
 
+        # Artist
+        command.append("-metadata")
+        command.append("artist_name")
+
+        # Title
+        command.append("-metadata")
+        command.append("title")
+
+        #### END METADATA SECTION ####
+
+        #### OUTPUT SECTION ####
+
+        # Duration
+        command.append("-t")
+        command.append("duration")
+
+        # Output File
+        command.append("output_file")
+
+        # LOGLEVEL
+        command.append("-loglevel")
+        command.append(args.loglevel)
+        
         for _album,_track_no,_title,_performer,_idx,__idx in ReadTrack(cue_file):
-                print("Album   : \"{}\"\n"
-                      "Track   : \"{}\"\n"
-                      "Title   : \"{}\"\n"
-                      "Artist  : \"{}\"\n"
-                      "Duration: [\"{}\" , \"{}\"]\n"
-                      .format(_album,_track_no,_title,_performer,_idx,__idx))
+#                print("Album   : \"{}\"\n"
+#                      "Track   : \"{}\"\n"
+#                      "Title   : \"{}\"\n"
+#                      "Artist  : \"{}\"\n"
+#                      "Duration: [\"{}\" , \"{}\"]\n"
+#                      .format(_album,_track_no,_title,_performer,_idx,__idx))
 
-#def calculateDuration(start, end):
-
-
-
+                
+                start = int(_idx[0:2]) * 60 +  int(_idx[3:5])
 
 
+                command[2] = str(start)
+                command[4] = filename
+                command[14] = 'track='+str(_track_no)
+                command[16] = 'album='+_album
+                command[18] = 'artist='+_performer
+
+                command[20] = 'title='+_title
+
+                command[23] = _title
 
 
+                # This is a little complicated
+                # This handles the last song in the album 
+                # The problem here is that when the script reaches the last song, the end index of it is empty since it is not known.
+	        # If the end index is empty, we can't get a duration and so we need to remove the '-t' option from ffmpeg. Doing this is
+        	# not easy since we are operating on the list in-place. So we remove the command. Only problem is once we do, the
+	        # indexes change. 
+                if ' ' == __idx:
+                        command.remove("-t")
+                        command.remove(command[21])
+                else:
+                        command[21] = "-t"
+                        end = int(__idx[0:2]) * 60 + int(__idx[3:5])
+                        command[22] = str(end - start)
+
+                # Since the indexes change we add the condition here as well.
+                if ' ' == __idx:
+                        if 'alac' == args.codec:
+                                command[21] += '.m4a'
+
+                        else:
+                                command[21] += '.flac'
+                else:
+                        if 'alac' == args.codec:
+                                command[23] += '.m4a'
+        
+                        else:
+                                command[23] += '.flac'
+
+                if True == args.verbose: 
+                        print(command)
+             
+                subprocess.call(command)
+
+def calculateDuration(start, end):
+        pass
 
 
 
