@@ -206,6 +206,57 @@ def create_argparser():
 
         return parser
 
+
+def buildCommand(args):
+        
+        # COMMAND INDEXES
+        # 2 = start time
+        # 3 = album time
+        #
+
+        command = []
+        command.append('ffmpeg')
+        ### INPUT SECTION
+        command.append('-ss')
+        command.append('start_time')
+        command.append('-i')
+        command.append('album_name')
+
+        ### END INPUT SECTION        
+        
+        ### SOUND SECTION
+        command.append("-ac")
+        command.append("2")
+        command.append("-ar")
+        command.append("44100")
+        command.append("-b:c")
+        command.append("320k")
+        command.append('-acodec')
+        command.append(args.codec)
+
+        
+
+
+        for _album,_track_no,_title,_performer,_idx,__idx in ReadTrack(cue_file):
+                print("Album   : \"{}\"\n"
+                      "Track   : \"{}\"\n"
+                      "Title   : \"{}\"\n"
+                      "Artist  : \"{}\"\n"
+                      "Duration: [\"{}\" , \"{}\"]\n"
+                      .format(_album,_track_no,_title,_performer,_idx,__idx))
+
+#def calculateDuration(start, end):
+
+
+
+
+
+
+
+
+
+
+#### MAIN SECTION ####
 if __name__ == '__main__':
         parser = create_argparser()
         # parse the arguments
@@ -224,13 +275,6 @@ if __name__ == '__main__':
                       "check -h or --help for usage".
                       format(cue_fpath))
                 exit(1)
-
-        for _album,_track_no,_title,_performer,_idx,__idx in ReadTrack(cue_file):
-                print("Album   : \"{}\"\n"
-                      "Track   : \"{}\"\n"
-                      "Title   : \"{}\"\n"
-                      "Artist  : \"{}\"\n"
-                      "Duration: [\"{}\" , \"{}\"]\n"
-                      .format(_album,_track_no,_title,_performer,_idx,__idx))
-
+        
+        buildCommand(args)
 
